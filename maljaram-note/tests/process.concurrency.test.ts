@@ -43,6 +43,13 @@ describe("POST /api/sessions/{id}/process", () => {
     afterTasks.length = 0;
   });
 
+  it("동시에 2번 호출해도 1번만 실행된다(E-11)", async () => {
+    const [a, b] = await Promise.all([call(), call()]);
+    expect([a.status, b.status].sort()).toEqual([202, 409]);
+    await Promise.all(afterTasks.map((t) => t()));
+    expect(run).toHaveBeenCalledTimes(1);
+  });
+
   it("202 응답 본문은 TRANSCRIBING", async () => {
     const res = await call();
     expect(res.status).toBe(202);

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ageInYears, todayKst, weekRange } from "@/lib/time";
+import { ageInYears, kstSlot, todayKst, weekRange } from "@/lib/time";
 
 describe("KST 날짜 계산", () => {
   it("UTC 15시는 KST 다음 날 0시", () => {
@@ -18,6 +18,12 @@ describe("KST 날짜 계산", () => {
   it("일요일 밤도 그 주에 포함", () => {
     // 2026-12-13(일) 23:30 KST
     expect(weekRange("this_week", new Date("2026-12-13T14:30:00Z"))).toEqual({ from: "2026-12-07", to: "2026-12-13" });
+  });
+
+  it("Cron 슬롯은 30분 단위로 내림", () => {
+    expect(kstSlot(new Date("2026-12-08T11:00:40Z"))).toBe("20:00");
+    expect(kstSlot(new Date("2026-12-08T11:29:59Z"))).toBe("20:00");
+    expect(kstSlot(new Date("2026-12-08T11:30:05Z"))).toBe("20:30");
   });
 
   it("만 나이", () => {
